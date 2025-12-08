@@ -1,4 +1,7 @@
+use std::rc::Rc;
 use crate::basics::*;
+
+use crate::traits::Material;
 
 #[derive(Clone, Default)]
 pub struct HitRecord {
@@ -6,6 +9,7 @@ pub struct HitRecord {
     pub normal: Vec3,
     pub t: f64,
 	pub front: bool,
+    pub mat: Option<Rc<dyn Material>>,
 }
 
 impl HitRecord {
