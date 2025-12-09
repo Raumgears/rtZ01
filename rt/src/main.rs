@@ -59,7 +59,13 @@ fn main() {
     world.add(Box::new(Sphere::new(Point3::new(1.0, 0.0, -1.0),0.5, mat_glass)));
 
     // Camera
-    let cam = Camera::new(ASPECT_RATIO);
+    let cam = Camera::new(
+        ASPECT_RATIO,
+        90.0,
+        Point3::new(-2.0, 2.0, 1.0),
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
 
     // Render
     print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
