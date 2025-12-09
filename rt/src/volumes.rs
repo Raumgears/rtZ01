@@ -1,5 +1,6 @@
 mod hittable_list;
 mod sphere;
+mod cube;
 
 mod plane;
 mod subplane_d;
@@ -7,6 +8,7 @@ mod subplane_s;
 
 pub use hittable_list::*;
 pub use sphere::*;
+pub use cube::*;
 
 pub use plane::*;
 pub use subplane_d::*;
