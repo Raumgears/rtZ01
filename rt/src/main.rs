@@ -54,10 +54,11 @@ fn main() {
     let mat_metal = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
     let mat_glass = Rc::new(Dielectric::new(1.5, 0.0));
 
-    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_diffus1)));
-    world.add(Box::new(Cube::new(Point3::new(-1.0, 0.0, -1.5), 0.5, mat_metal)));
-    world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -3.0),0.5,mat_glass)));
-    world.add(Box::new(Sphere::new(Point3::new(-1.2, 0.0, 1.0),0.5, mat_diffus3)));
+    // world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_diffus1)));
+    // world.add(Box::new(Cube::new(Point3::new(-1.0, 0.0, -1.5), 0.5, mat_metal)));
+    // world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -3.0),0.5,mat_glass)));
+    world.add(Box::new(Sphere::new(Point3::new(1.0, 0.0, -1.8),0.5, mat_diffus3)));
+    world.add(Box::new(Cylinder::new( Point3::new(0.0, -0.5, -2.0), 1.0, 0.5, Vec3::new(0.0, 1.0, 0.0), mat_metal)));
 
     // Camera
     let cam = Camera::new(
