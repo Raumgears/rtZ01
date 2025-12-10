@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use crate::traits::{HitRecord, Hittable, Material};
-use crate::basics::{Point3, Ray, Vec3, dot};
+use crate::basics::{Point3, Ray, Vec3};
 
 pub struct Cube {
     pub center: Point3,
@@ -24,6 +24,7 @@ impl Cube {
 
 impl Hittable for Cube {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+        // Slab method (AABB)
         let low_bounds = self.center + Vec3::new(-self.size, -self.size, -self.size);
         let high_bounds = self.center + Vec3::new(self.size, self.size, self.size);
 
@@ -44,7 +45,7 @@ impl Hittable for Cube {
         let tc = t_close.x().max(t_close.y().max(t_close.z()));
         let tf = t_far.x().min(t_far.y().min(t_far.z()));
 
-        if tc <= tf && tf > 0.{
+        if tc <= tf && tf > 0. && tc >= t_min && tc <= t_max {
             rec.t = tc;
             rec.p = ray.at(rec.t);
             rec.set_face_normal(ray, self.outward_normal(rec.p));
