@@ -4,16 +4,16 @@ use crate::{basics::Vec3, utils::clamp};
 // Color is just 3 fields, as a Vec3
 pub type Color = Vec3;
 
-pub fn write_color(out: &mut impl Write, pixel_color: Color, samples_per_pixel: i32) {
+pub fn write_color(out: &mut impl Write, pixel_color: Color, samples_per_pixel: i32, gamma: f64) {
     let mut r = pixel_color.x();
     let mut g = pixel_color.y();
     let mut b = pixel_color.z();
 
     // Divide the color by the number of samples
     let scale = 1.0 / samples_per_pixel as f64;
-    r = f64::sqrt(scale * r);
-    g = f64::sqrt(scale * g);
-    b = f64::sqrt(scale * b);
+    r = (scale * r).powf(1.0/gamma);
+    g = (scale * g).powf(1.0/gamma);
+    b = (scale * b).powf(1.0/gamma);
 
     // Write the translated [0, 255] value of each color component
     writeln!(

@@ -44,6 +44,8 @@ fn main() {
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
     const SAMPLES_PER_PIXEL: i32 = 500;
     const MAX_DEPTH: i32 = 50;
+    const GAMMA: f64 = 2.0; // Gamma de base : 2.0
+    let color_filter: Color = Color::new(1.0, 1.0, 1.0); // Filter de base : Color::new(1.0, 1.0, 1.0)
 
     // World
     let mut world = HittableList::new();
@@ -85,7 +87,7 @@ fn main() {
                 let r = cam.get_ray(u, v);
                 pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
-            write_color(&mut io::stdout(), pixel_color, SAMPLES_PER_PIXEL);
+            write_color(&mut io::stdout(), pixel_color * color_filter, SAMPLES_PER_PIXEL, GAMMA);
         }
     }
     eprint!("\nDone.\n");
