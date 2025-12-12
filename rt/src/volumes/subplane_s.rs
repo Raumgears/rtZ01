@@ -8,7 +8,6 @@ pub struct Square {
     dist: f64,
     proj: Point3,          // Proj of the point given
 	size: f64,
-	angle: f64,
 	base_u: Vec3,
 	base_v: Vec3,
     mat: Arc<dyn Material>,
@@ -46,7 +45,6 @@ impl Square {
             dist: unit_dist,
 			proj,
 			size,
-			angle: angle_rad,
 			base_u: u,
 			base_v: v,
             mat,
