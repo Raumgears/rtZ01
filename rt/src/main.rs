@@ -22,19 +22,26 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     if world.hit(r, 0.001, INFINITY, &mut rec) {
         let mut attenuation = Color::default();
         let mut scattered = Ray::default();
+        let emitted = rec.mat.as_ref().unwrap().emitted();
         if rec
             .mat
             .as_ref()
             .unwrap()
             .scatter(r, &rec, &mut attenuation, &mut scattered)
         {
-            return attenuation * ray_color(&scattered, world, depth - 1);
+            return emitted + attenuation * ray_color(&scattered, world, depth + 1);
         }
-        return Color::new(0.0, 0.0, 0.0);
+
+        return emitted;
     }
+
+    /*
     let unit_direction = unit_vec(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+    */
+
+    Color::new(0.0, 0.0, 0.0)
 }
 
 fn main() {
@@ -42,7 +49,7 @@ fn main() {
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
     const IMAGE_WIDTH: i32 = 1000;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 100;
+    const SAMPLES_PER_PIXEL: i32 = 300;
     const MAX_DEPTH: i32 = 50;
     const GAMMA: f64 = 2.0; // Gamma de base : 2.0
     let color_filter: Color = Color::new(1.0, 1.0, 1.0); // Filter de base : Color::new(1.0, 1.0, 1.0)
@@ -55,17 +62,19 @@ fn main() {
     let mat_diffus3 = Rc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
     let mat_metal = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
     let mat_glass = Rc::new(Dielectric::new(1.5, 0.0));
+    let mat_light = Rc::new(DiffuseLight::new(Color::new(8.0, 8.0, 8.0)));
 
     world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_diffus1)));
     world.add(Box::new(Cube::new(Point3::new(0.0, 0.0, -1.5), 0.5, Vec3::new(0.0, 45.0, 0.0), mat_metal)));
-    // world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -3.0),0.5,mat_glass)));
-    world.add(Box::new(Sphere::new(Point3::new(-2.0, 0.0, -1.0),0.5, mat_diffus3)));
+    world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -3.0),0.5,mat_glass)));
+    world.add(Box::new(Sphere::new(Point3::new(-1.5, 0.0, -1.0),0.5, mat_diffus3)));
     world.add(Box::new(Cube::new(Point3::new(2.0, 0.0, -1.0),0.5, Vec3::new(0.0, 45.0, 45.0), mat_diffus2)));
+    world.add(Box::new(Sphere::new(Point3::new(1.5, 2.0, -2.5), 0.5, mat_light)));
 
     // Camera
     let cam = Camera::new(
         ASPECT_RATIO,
-        90.0,
+        75.0,
         Point3::new(0.0, 0.0, 0.0),
         Point3::new(0.0, 0.0, -1.0),
         Vec3::new(0.0, 1.0, 0.0),
