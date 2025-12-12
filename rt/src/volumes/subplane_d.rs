@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 use crate::traits::{HitRecord, Hittable, Material};
 use crate::basics::{Point3, Ray, Vec3, dot, unit_vec};
 use crate::utils::near_zero;
@@ -8,11 +8,11 @@ pub struct Disk {
     dist: f64,
     center: Point3,          // Proj of the point given
     radius: f64,
-    mat: Rc<dyn Material>,
+    mat: Arc<dyn Material>,
 }
 
 impl Disk {
-    pub fn new(norm: Vec3, dist: f64, point: Point3, radius: f64, mat: Rc<dyn Material>) -> Disk {
+    pub fn new(norm: Vec3, dist: f64, point: Point3, radius: f64, mat: Arc<dyn Material>) -> Disk {
         let unit_norm = unit_vec(norm);
         let unit_dist = dist / norm.length();
 

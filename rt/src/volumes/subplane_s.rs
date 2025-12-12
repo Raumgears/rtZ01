@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 use crate::traits::{HitRecord, Hittable, Material};
 use crate::basics::{Point3, Ray, Vec3, cross, dot, unit_vec};
 use crate::utils::{degrees_to_radians, near_zero};
@@ -11,11 +11,11 @@ pub struct Square {
 	angle: f64,
 	base_u: Vec3,
 	base_v: Vec3,
-    mat: Rc<dyn Material>,
+    mat: Arc<dyn Material>,
 }
 
 impl Square {
-    pub fn new(norm: Vec3, dist: f64, point: Point3, size: f64, angle: f64, mat: Rc<dyn Material>) -> Square {
+    pub fn new(norm: Vec3, dist: f64, point: Point3, size: f64, angle: f64, mat: Arc<dyn Material>) -> Square {
         let unit_norm = unit_vec(norm);
         let unit_dist = dist / norm.length();
 

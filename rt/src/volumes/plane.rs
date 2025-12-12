@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 use crate::traits::{HitRecord, Hittable, Material};
 use crate::basics::{dot, Ray, Vec3, unit_vec};
 use crate::utils::near_zero;
@@ -7,12 +7,12 @@ use crate::utils::near_zero;
 pub struct Plane {
     norm: Vec3,
     dist: f64,
-    mat: Rc<dyn Material>,
+    mat: Arc<dyn Material>,
 }
 
 // Dist should be negative
 impl Plane {
-    pub fn new(norm: Vec3, dist: f64, mat: Rc<dyn Material>) -> Plane {
+    pub fn new(norm: Vec3, dist: f64, mat: Arc<dyn Material>) -> Plane {
         let unit_norm = unit_vec(norm);
         let unit_dist = dist / norm.length();
         Plane {
