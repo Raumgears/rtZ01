@@ -166,6 +166,19 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
     )
 }
 
+pub fn rotate(u: Vec3, v: Vec3) -> Vec3 {
+	let r_matrix: Vec<Vec<f64>> = vec![
+		vec![(v.x().cos() * v.y().cos()), (v.x().cos() * v.y().sin() * v.z().sin() - v.x().sin() * v.z().cos()), (v.x().cos() * v.y().sin() * v.z().cos() + v.x().sin() * v.z().sin())],
+		vec![(v.x().sin() * v.y().cos()), (v.x().sin() * v.y().sin() * v.z().sin() + v.x().cos() * v.z().cos()), (v.x().sin() * v.y().sin() * v.z().cos() - v.x().cos() * v.z().sin())],
+		vec![(-v.y().sin()), (v.y().cos() * v.z().sin()), (v.y().cos() * v.z().cos())]
+	];
+	Vec3::new(
+		r_matrix[0][0] * u.x() + r_matrix[0][1] * u.y() + r_matrix[0][2] * u.z(),
+		r_matrix[1][0] * u.x() + r_matrix[1][1] * u.y() + r_matrix[1][2] * u.z(),
+		r_matrix[2][0] * u.x() + r_matrix[2][1] * u.y() + r_matrix[2][2] * u.z(),
+	)
+}
+
 
 //----------------------
 
