@@ -5,6 +5,11 @@ use crate::{basics::Vec3, utils::clamp};
 pub type Color = Vec3;
 
 pub fn write_color(out: &mut impl Write, pixel_color: Color, samples_per_pixel: i32, gamma: f64) {
+    if (pixel_color.x() == 0.0) && (pixel_color.y() == 0.0) && (pixel_color.z() == 0.0) {
+        writeln!(out, "0 0 0").expect("writing color");
+        return;
+    }
+
     let mut r = pixel_color.x();
     let mut g = pixel_color.y();
     let mut b = pixel_color.z();

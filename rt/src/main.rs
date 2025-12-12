@@ -4,8 +4,9 @@ mod volumes;
 mod utils;
 mod camera;
 
+use rayon::prelude::*;
 use std::io;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::basics::*;
 use crate::traits::*;
@@ -22,19 +23,24 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     if world.hit(r, 0.001, INFINITY, &mut rec) {
         let mut attenuation = Color::default();
         let mut scattered = Ray::default();
+        let emitted = rec.mat.as_ref().unwrap().emitted();
         if rec
             .mat
             .as_ref()
             .unwrap()
             .scatter(r, &rec, &mut attenuation, &mut scattered)
         {
-            return attenuation * ray_color(&scattered, world, depth - 1);
+            return emitted + attenuation * ray_color(&scattered, world, depth + 1);
         }
-        return Color::new(0.0, 0.0, 0.0);
+
+        return emitted;
     }
+
     let unit_direction = unit_vec(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+
+    //Color::new(0.0, 0.0, 0.0)
 }
 
 fn main() {
@@ -50,11 +56,12 @@ fn main() {
     // World
     let mut world = HittableList::new();
 
-    let mat_diffus1 = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.2)));
-    let mat_diffus2 = Rc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
-    let mat_metal1 = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
-    let mat_metal2 = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.2));
-    let mat_glass = Rc::new(Dielectric::new(1.5, 0.5));
+    let mat_diffus1 = Arc::new(Lambertian::new(Color::new(0.8, 0.8, 0.2)));
+    let mat_diffus2 = Arc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
+    let mat_metal1 = Arc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
+    let mat_metal2 = Arc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.2));
+    let mat_glass = Arc::new(Dielectric::new(1.5, 0.5));
+    let mat_light = Arc::new(DiffuseLight::new(Color::new(8.0, 8.0, 8.0)));
 
     //world.add(Box::new(Plane::new(Vec3::new(0.0, -1.0, 0.0), -0.5, mat_metal1.clone())));
     //world.add(Box::new(Disk::new(Vec3::new(0.0, 1.0, 0.5), -0.5, Point3::new(0.0, 1.0, 2.0), 1.0, mat_diffus1)));
@@ -79,14 +86,20 @@ fn main() {
 
     for j in (0..IMAGE_HEIGHT).rev() {
         eprint!("\rScanlines remaining: {} ", j);
-        for i in 0..IMAGE_WIDTH {
-            let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-            for _ in 0..SAMPLES_PER_PIXEL {
-                let u = (i as f64 + rand_01()) / (IMAGE_WIDTH - 1) as f64;
-                let v = (j as f64 + rand_01()) / (IMAGE_HEIGHT - 1) as f64;
-                let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, MAX_DEPTH);
-            }
+        let pixel_colors: Vec<_> = (0..IMAGE_WIDTH)
+            .into_par_iter()
+            .map(|i| {
+                let mut pixel_color = Color::new(0.0, 0.0, 0.0);
+                for _ in 0..SAMPLES_PER_PIXEL {
+                    let u = ((i as f64) + rand_01()) / (IMAGE_WIDTH - 1) as f64;
+                    let v = ((j as f64) + rand_01()) / (IMAGE_HEIGHT - 1) as f64;
+                    let r = cam.get_ray(u, v);
+                    pixel_color += ray_color(&r, &world, MAX_DEPTH);
+                }
+                pixel_color
+            })
+            .collect();
+        for pixel_color in pixel_colors {
             write_color(&mut io::stdout(), pixel_color * color_filter, SAMPLES_PER_PIXEL, GAMMA);
         }
     }

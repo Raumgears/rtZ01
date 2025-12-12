@@ -2,7 +2,7 @@ use crate::basics::{Color, Ray, dot, rand_in_unit_sphere, rand_unit_vec, reflect
 use crate::traits::HitRecord;
 use crate::utils::rand_01;
 
-pub trait Material {
+pub trait Material: Send + Sync {
     fn scatter(
         &self,
         r_in: &Ray,
@@ -10,6 +10,10 @@ pub trait Material {
         attenuation: &mut Color,
         scattered: &mut Ray,
     ) -> bool;
+
+    fn emitted(&self) -> Color {
+        Color::new(0.0, 0.0, 0.0)
+    }
 }
 
 pub struct Lambertian {
@@ -125,6 +129,34 @@ impl Material for Dielectric {
         *attenuation = Color::new(1.0, 1.0, 1.0);
         *scattered = Ray::new(rec.p, direction + self.fuzz * rand_in_unit_sphere());
         true
+    }
+}
+
+
+
+pub struct DiffuseLight {
+    emit: Color,
+}
+
+impl DiffuseLight {
+    pub fn new(c: Color) -> Self {
+        DiffuseLight { emit: c }
+    }
+}
+
+impl Material for DiffuseLight {
+    fn scatter(
+        &self,
+        _r_in: &Ray,
+        _rec: &HitRecord,
+        _attenuation: &mut Color,
+        _scattered: &mut Ray,
+    ) -> bool {
+        false
+    }
+
+    fn emitted(&self) -> Color {
+        self.emit
     }
 }
 
