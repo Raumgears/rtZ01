@@ -1,18 +1,18 @@
 use std::f64::consts::PI;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::traits::{HitRecord, Hittable, Material};
-use crate::basics::{Point3, Ray, Vec3, rotate, unit_vec, dot};
+use crate::basics::{Point3, Ray, Vec3, rotate, dot};
 
 pub struct Cube {
     pub center: Point3,
     pub size: f64,
-    pub mat: Rc<dyn Material>,
+    pub mat: Arc<dyn Material>,
     pub rotation: Vec3,
 }
 
 impl Cube {
-    pub fn new(center: Point3, size: f64, rotation: Vec3, mat: Rc<dyn Material>) -> Self {
+    pub fn new(center: Point3, size: f64, rotation: Vec3, mat: Arc<dyn Material>) -> Self {
         Self { center, size, mat, rotation: rotation * (PI/180.0) }
     }
 
@@ -27,14 +27,15 @@ impl Cube {
         // eprintln!("x: {}, y: {}, z: {}", result.x(), result.y(), result.z());
         // result
 
-        let normals_vec= vec![
-            Vec3::new(0.0, 0.0, 1.0), //front
-            Vec3::new(0.0, 0.0, -1.0), //back
-            Vec3::new(0.0, 1.0, 0.0), //top
-            Vec3::new(0.0, -1.0, 0.0), //bottom
-            Vec3::new(1.0, 0.0, 0.0), //right
-            Vec3::new(-1.0, 0.0, 0.0) //left
+        let normals_vec: [Vec3; 6] = [
+            Vec3::new(1.0, 0.0, 0.0),   //front
+            Vec3::new(-1.0, 0.0, 0.0),  //back
+            Vec3::new(0.0, 1.0, 0.0),   //top
+            Vec3::new(0.0, -1.0, 0.0),  //bottom
+            Vec3::new(0.0, 0.0, 1.0),   //right
+            Vec3::new(0.0, 0.0, -1.0),  //left
         ];
+
         let mut result_index = 0;
         let mut dot_result = 0.0;
         let collision = point - self.center;

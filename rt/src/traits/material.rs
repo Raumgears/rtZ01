@@ -2,7 +2,7 @@ use crate::basics::{Color, Ray, dot, rand_in_unit_sphere, rand_unit_vec, reflect
 use crate::traits::HitRecord;
 use crate::utils::rand_01;
 
-pub trait Material {
+pub trait Material: Send + Sync {
     fn scatter(
         &self,
         r_in: &Ray,

@@ -4,8 +4,9 @@ mod volumes;
 mod utils;
 mod camera;
 
+use rayon::prelude::*;
 use std::io;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::basics::*;
 use crate::traits::*;
@@ -35,13 +36,11 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
         return emitted;
     }
 
-    /*
     let unit_direction = unit_vec(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
-    */
 
-    Color::new(0.0, 0.0, 0.0)
+    //Color::new(0.0, 0.0, 0.0)
 }
 
 fn main() {
@@ -49,7 +48,7 @@ fn main() {
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
     const IMAGE_WIDTH: i32 = 1000;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 300;
+    const SAMPLES_PER_PIXEL: i32 = 500;
     const MAX_DEPTH: i32 = 50;
     const GAMMA: f64 = 2.0; // Gamma de base : 2.0
     let color_filter: Color = Color::new(1.0, 1.0, 1.0); // Filter de base : Color::new(1.0, 1.0, 1.0)
@@ -57,24 +56,24 @@ fn main() {
     // World
     let mut world = HittableList::new();
 
-    let mat_diffus1 = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let mat_diffus2 = Rc::new(Lambertian::new(Color::new(1.0, 0.0, 0.0)));
-    let mat_diffus3 = Rc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
-    let mat_metal = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
-    let mat_glass = Rc::new(Dielectric::new(1.5, 0.0));
-    let mat_light = Rc::new(DiffuseLight::new(Color::new(8.0, 8.0, 8.0)));
+    let mat_diffus1 = Arc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
+    let mat_diffus2 = Arc::new(Lambertian::new(Color::new(1.0, 0.0, 0.0)));
+    let mat_diffus3 = Arc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
+    let mat_metal = Arc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
+    let mat_glass = Arc::new(Dielectric::new(1.5, 0.0));
+    let mat_light = Arc::new(DiffuseLight::new(Color::new(8.0, 8.0, 8.0)));
 
-    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_diffus1)));
-    world.add(Box::new(Cube::new(Point3::new(0.0, 0.0, -1.5), 0.5, Vec3::new(0.0, 45.0, 0.0), mat_metal)));
+    //world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_diffus1)));
+    //world.add(Box::new(Cube::new(Point3::new(0.0, 0.0, -1.5), 0.5, Vec3::new(0.0, 45.0, 0.0), mat_metal)));
     world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -3.0),0.5,mat_glass)));
-    world.add(Box::new(Sphere::new(Point3::new(-1.5, 0.0, -1.0),0.5, mat_diffus3)));
-    world.add(Box::new(Cube::new(Point3::new(2.0, 0.0, -1.0),0.5, Vec3::new(0.0, 45.0, 45.0), mat_diffus2)));
+    //world.add(Box::new(Sphere::new(Point3::new(-1.5, 0.0, -1.0),0.5, mat_diffus3)));
+    world.add(Box::new(Cube::new(Point3::new(2.0, 0.0, -1.0),0.5, Vec3::new(0.0, 0.0, 0.0), mat_diffus2)));
     world.add(Box::new(Sphere::new(Point3::new(1.5, 2.0, -2.5), 0.5, mat_light)));
 
     // Camera
     let cam = Camera::new(
         ASPECT_RATIO,
-        75.0,
+        90.0,
         Point3::new(0.0, 0.0, 0.0),
         Point3::new(0.0, 0.0, -1.0),
         Vec3::new(0.0, 1.0, 0.0),
@@ -85,14 +84,20 @@ fn main() {
 
     for j in (0..IMAGE_HEIGHT).rev() {
         eprint!("\rScanlines remaining: {} ", j);
-        for i in 0..IMAGE_WIDTH {
-            let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-            for _ in 0..SAMPLES_PER_PIXEL {
-                let u = (i as f64 + rand_01()) / (IMAGE_WIDTH - 1) as f64;
-                let v = (j as f64 + rand_01()) / (IMAGE_HEIGHT - 1) as f64;
-                let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, MAX_DEPTH);
-            }
+        let pixel_colors: Vec<_> = (0..IMAGE_WIDTH)
+            .into_par_iter()
+            .map(|i| {
+                let mut pixel_color = Color::new(0.0, 0.0, 0.0);
+                for _ in 0..SAMPLES_PER_PIXEL {
+                    let u = ((i as f64) + rand_01()) / (IMAGE_WIDTH - 1) as f64;
+                    let v = ((j as f64) + rand_01()) / (IMAGE_HEIGHT - 1) as f64;
+                    let r = cam.get_ray(u, v);
+                    pixel_color += ray_color(&r, &world, MAX_DEPTH);
+                }
+                pixel_color
+            })
+            .collect();
+        for pixel_color in pixel_colors {
             write_color(&mut io::stdout(), pixel_color * color_filter, SAMPLES_PER_PIXEL, GAMMA);
         }
     }

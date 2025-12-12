@@ -10,11 +10,6 @@ pub fn write_color(out: &mut impl Write, pixel_color: Color, samples_per_pixel: 
         return;
     }
 
-    if (pixel_color.x() == 255.0) && (pixel_color.y() == 255.0) && (pixel_color.z() == 255.0) {
-        writeln!(out, "255 255 255").expect("writing color");
-        return;
-    }
-
     let mut r = pixel_color.x();
     let mut g = pixel_color.y();
     let mut b = pixel_color.z();
