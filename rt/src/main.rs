@@ -55,7 +55,8 @@ fn main() {
     let mat_glass = Rc::new(Dielectric::new(1.5, 0.5));
 
     //world.add(Box::new(Plane::new(Vec3::new(0.0, -1.0, 0.0), -0.5, mat_metal1.clone())));
-    world.add(Box::new(Disk::new(Vec3::new(0.0, 1.0, 0.5), -0.5, Point3::new(0.0, 1.0, 2.0), 1.0, mat_diffus1)));
+    //world.add(Box::new(Disk::new(Vec3::new(0.0, 1.0, 0.5), -0.5, Point3::new(0.0, 1.0, 2.0), 1.0, mat_diffus1)));
+    world.add(Box::new(Square::new(Vec3::new(0.0, 1.0, 0.5), -0.5, Point3::new(0.0, 1.0, 2.0), 1.0, 0.0, mat_diffus1)));
     world.add(Box::new(Plane::new(Vec3::new(0.0, 1.0, 0.1), -0.5, mat_metal1.clone())));
     //world.add(Box::new(Plane::new(Vec3::new(0.0, 0.0, -1.0), 3.0, mat_diffus1.clone())));
     //world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, 1.0), 0.5, mat_diffus2)));
