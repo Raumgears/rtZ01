@@ -34,5 +34,5 @@ pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
 // near_zero() for Vec3, but for f64
 pub fn near_zero(val: f64) -> bool {
     const EPS: f64 = 1.0e-12;
-    val < EPS
+    f64::abs(val) < EPS
 }
