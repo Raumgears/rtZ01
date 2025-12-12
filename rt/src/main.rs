@@ -42,7 +42,7 @@ fn main() {
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
     const IMAGE_WIDTH: i32 = 1000;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 100;
+    const SAMPLES_PER_PIXEL: i32 = 500;
     const MAX_DEPTH: i32 = 50;
     const GAMMA: f64 = 2.0; // Gamma de base : 2.0
     let color_filter: Color = Color::new(1.0, 1.0, 1.0); // Filter de base : Color::new(1.0, 1.0, 1.0)
@@ -50,24 +50,27 @@ fn main() {
     // World
     let mut world = HittableList::new();
 
-    let mat_diffus1 = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let mat_diffus2 = Rc::new(Lambertian::new(Color::new(1.0, 0.0, 0.0)));
-    let mat_diffus3 = Rc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
-    let mat_metal = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
-    let mat_glass = Rc::new(Dielectric::new(1.5, 0.0));
+    let mat_diffus1 = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.2)));
+    let mat_diffus2 = Rc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
+    let mat_metal1 = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.0));
+    let mat_metal2 = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.2));
+    let mat_glass = Rc::new(Dielectric::new(1.5, 0.5));
 
-    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_diffus1)));
-    world.add(Box::new(Cube::new(Point3::new(0.0, 0.0, -1.5), 0.5, Vec3::new(0.0, 45.0, 0.0), mat_metal)));
-    // world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -3.0),0.5,mat_glass)));
-    world.add(Box::new(Sphere::new(Point3::new(-2.0, 0.0, -1.0),0.5, mat_diffus3)));
-    world.add(Box::new(Cube::new(Point3::new(2.0, 0.0, -1.0),0.5, Vec3::new(0.0, 45.0, 45.0), mat_diffus2)));
+    //world.add(Box::new(Plane::new(Vec3::new(0.0, -1.0, 0.0), -0.5, mat_metal1.clone())));
+    //world.add(Box::new(Disk::new(Vec3::new(0.0, 1.0, 0.5), -0.5, Point3::new(0.0, 1.0, 2.0), 1.0, mat_diffus1)));
+    world.add(Box::new(Square::new(Vec3::new(0.0, 1.0, 0.5), -0.5, Point3::new(0.0, 1.0, 2.0), 1.0, 0.0, mat_diffus1)));
+    world.add(Box::new(Plane::new(Vec3::new(0.0, 1.0, 0.1), -0.5, mat_metal1.clone())));
+    //world.add(Box::new(Plane::new(Vec3::new(0.0, 0.0, -1.0), 3.0, mat_diffus1.clone())));
+    //world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, 1.0), 0.5, mat_diffus2)));
+    world.add(Box::new(Sphere::new(Point3::new(-1.0, 0.0, 1.0), 0.5, mat_metal2)));
+    //world.add(Box::new(Sphere::new(Point3::new(1.0, 0.0, 1.0), 0.5, mat_diffus2)));
 
     // Camera
     let cam = Camera::new(
         ASPECT_RATIO,
         90.0,
-        Point3::new(0.0, 0.0, 0.0),
         Point3::new(0.0, 0.0, -1.0),
+        Point3::new(0.0, 0.0, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
     );
 
