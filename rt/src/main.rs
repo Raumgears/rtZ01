@@ -74,7 +74,7 @@ fn main() {
     //world.add(Box::new(Sphere::new(Point3::new(1.0, 0.0, 1.0), 0.5, mat_diffus2)));
     //world.add(Box::new(Cube::new(Point3::new(3.0, 0.0, 1.0), 0.5, Vec3::new(45.0, 45.0, 45.0), mat_diffus2.clone())));
     //world.add(Box::new(Cube::new(Point3::new(-3.0, 0.0, 1.0), 0.5, Vec3::new(45.0, 45.0, 45.0), mat_diffus2.clone())));
-    world.add(Box::new(Cylinder::new(Point3::new(0.0, 0.5, 1.0), 1.0, 1.0, Vec3::new(0.0, 0.0, 0.0), mat_diffus1.clone())));
+    world.add(Box::new(Cylinder::new(Point3::new(0.0, 0.5, 3.0), 1.0, 1.0, Vec3::new(0.0, 1.0, 0.0), mat_glass.clone())));
 
     // Camera
     let cam = Camera::new(

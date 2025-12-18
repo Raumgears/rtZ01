@@ -5,6 +5,7 @@ mod plane;
 mod subplane_d;
 mod subplane_s;
 mod cylinder;
+mod cylinder_t;
 
 pub use hittable_list::*;
 pub use sphere::*;
@@ -13,3 +14,4 @@ pub use plane::*;
 pub use subplane_d::*;
 pub use subplane_s::*;
 pub use cylinder::*;
+pub use cylinder_t::*;
