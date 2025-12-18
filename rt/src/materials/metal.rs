@@ -1,13 +1,14 @@
 use crate::basics::{Color, Ray, dot, rand_in_unit_sphere, reflect, unit_vec};
 use crate::traits::{HitRecord, Material};
 
+// Metallic/Mirror
 pub struct Metal {
     albedo: Color,
 	fuzz: f64,
 }
 
 impl Metal {
-    pub fn new(a: Color, f: f64) -> Self {
+    pub fn new(a: Color, f: f64) -> Metal {
         Metal {
 			albedo: a,
 			fuzz: if f < 1.0 {

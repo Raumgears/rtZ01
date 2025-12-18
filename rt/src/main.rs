@@ -16,6 +16,7 @@ use crate::materials::*;
 use crate::utils::*;
 use camera::*;
 
+// Verify each hit for the trajectory of the ray
 fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
@@ -37,23 +38,26 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
 
         return emitted;
     }
+    // Background color can be inputed here (currently sky-like or black):
 
+    // Sky
     let unit_direction = unit_vec(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 
+    // Black
     //Color::new(0.0, 0.0, 0.0)
 }
 
 fn main() {
     // Image
-    const ASPECT_RATIO: f64 = 16.0 / 9.0;
-    const IMAGE_WIDTH: i32 = 1000;
+    const ASPECT_RATIO: f64 = 16.0 / 9.0; // Image format
+    const IMAGE_WIDTH: i32 = 1000; // Horizontal Size
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 200;
-    const MAX_DEPTH: i32 = 50;
-    const GAMMA: f64 = 2.0; // Gamma de base : 2.0
-    let color_filter: Color = Color::new(1.0, 1.0, 1.0); // Filter de base : Color::new(1.0, 1.0, 1.0)
+    const SAMPLES_PER_PIXEL: i32 = 200; // Anti-aliasing sharpness; Base Samples : 100
+    const MAX_DEPTH: i32 = 50; // Number of bounces of a ray; Base Max_Depth : 50
+    const GAMMA: f64 = 2.0; // Base Gamma : 2.0
+    let color_filter: Color = Color::new(1.0, 1.0, 1.0); // Base Filter : Color::new(1.0, 1.0, 1.0)
 
     // World
     let mut world = HittableList::new();
@@ -74,7 +78,7 @@ fn main() {
     //world.add(Box::new(Sphere::new(Point3::new(1.0, 0.0, 1.0), 0.5, mat_diffus2)));
     //world.add(Box::new(Cube::new(Point3::new(3.0, 0.0, 1.0), 0.5, Vec3::new(45.0, 45.0, 45.0), mat_diffus2.clone())));
     //world.add(Box::new(Cube::new(Point3::new(-3.0, 0.0, 1.0), 0.5, Vec3::new(45.0, 45.0, 45.0), mat_diffus2.clone())));
-    world.add(Box::new(Cylinder::new(Point3::new(0.0, 0.5, 3.0), 1.0, 1.0, Vec3::new(0.0, 1.0, 0.0), mat_glass.clone())));
+    world.add(Box::new(Cylinder::new(Point3::new(0.0, 0.5, 3.0), 1.0, 1.0, Vec3::new(0.0, 1.0, 0.0), mat_diffus1.clone())));
 
     // Camera
     let cam = Camera::new(
@@ -86,7 +90,7 @@ fn main() {
     );
 
     // Render
-    print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+    print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT); // .ppm header
 
     for j in (0..IMAGE_HEIGHT).rev() {
         eprint!("\rScanlines remaining: {} ", j);

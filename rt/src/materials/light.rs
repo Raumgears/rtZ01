@@ -1,12 +1,13 @@
 use crate::basics::{Color, Ray};
 use crate::traits::{HitRecord, Material};
 
+// Light
 pub struct DiffuseLight {
     emit: Color,
 }
 
 impl DiffuseLight {
-    pub fn new(c: Color) -> Self {
+    pub fn new(c: Color) -> DiffuseLight {
         DiffuseLight { emit: c }
     }
 }

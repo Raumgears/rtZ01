@@ -150,10 +150,7 @@ impl DivAssign<Vec3> for Vec3 {
     }
 }
 
-
-//----------------------------------------------------
-
-
+// Operations on Vectors/Matrixes
 pub fn dot(u: Vec3, v: Vec3) -> f64 {
     u.tab[0] * v.tab[0] + u.tab[1] * v.tab[1] + u.tab[2] * v.tab[2]
 }
@@ -179,9 +176,7 @@ pub fn rotate(u: Vec3, v: Vec3) -> Vec3 {
 	)
 }
 
-
-//----------------------
-
+// Unit and Random
 pub fn unit_vec(v: Vec3) -> Vec3 {
     v / v.length()
 }
@@ -200,11 +195,13 @@ pub fn rand_in_unit_sphere() -> Vec3 {
     }
 }
 
+// Ray interactions
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v - 2.0 * dot(v, n) * n
 }
+
 pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
-    let cos_theta = f64::min(dot(-uv, n), 1.0); // Clamp à 1.0
+    let cos_theta = f64::min(dot(-uv, n), 1.0); // Clamp to 1.0
     let r_out_perp = etai_over_etat * (uv + cos_theta * n);
     let r_out_parallel = -f64::sqrt(f64::abs(1.0 - r_out_perp.length_squared())) * n;
     r_out_perp + r_out_parallel

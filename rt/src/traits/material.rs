@@ -1,6 +1,7 @@
 use crate::basics::{Color, Ray};
 use crate::traits::HitRecord;
 
+// Send + Sync necessary to work with Arc & rayon crate
 pub trait Material: Send + Sync {
     fn scatter(
         &self,

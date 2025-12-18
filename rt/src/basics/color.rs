@@ -20,7 +20,7 @@ pub fn write_color(out: &mut impl Write, pixel_color: Color, samples_per_pixel: 
     g = (scale * g).powf(1.0/gamma);
     b = (scale * b).powf(1.0/gamma);
 
-    // Write the translated [0, 255] value of each color component
+    // Write the translated [0, 255] value of each color component; Main output
     writeln!(
         out,
         "{} {} {}",

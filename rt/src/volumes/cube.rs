@@ -12,8 +12,13 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(center: Point3, size: f64, rotation: Vec3, mat: Arc<dyn Material>) -> Self {
-        Self { center, size, mat, rotation: rotation * (PI/180.0) }
+    pub fn new(center: Point3, size: f64, rotation: Vec3, mat: Arc<dyn Material>) -> Cube {
+        Cube {
+            center,
+            size,
+            mat,
+            rotation: rotation * (PI/180.0)
+        }
     }
 
     pub fn outward_normal(&self, point: Point3) -> Vec3 {
@@ -54,7 +59,7 @@ impl Cube {
 
 impl Hittable for Cube {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
-        // Rotate ray origin around cube center by cube's rotation 
+        // Rotate ray origin around cube center by cube's rotation
         let oc = ray.origin() - self.center;
 
         let clone_ray = Ray::new((ray.origin() + self.center + rotate(oc, self.rotation)) - ray.origin(), rotate(ray.direction(), self.rotation));
@@ -75,7 +80,7 @@ impl Hittable for Cube {
         let t_far = Vec3::new(t_low.x().max(t_high.x()),
                                     t_low.y().max(t_high.y()),
                                     t_low.z().max(t_high.z()));
-        
+
         let tc = t_close.x().max(t_close.y().max(t_close.z()));
         let tf = t_far.x().min(t_far.y().min(t_far.z()));
 

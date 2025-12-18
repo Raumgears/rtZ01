@@ -1,9 +1,9 @@
 use std::sync::Arc;
-
 use crate::basics::{Point3, Vec3, dot, unit_vec};
 use crate::traits::{Hittable, Material};
 use crate::volumes::{CylinderTube, Disk, HittableList};
 
+// Composite Volume
 pub struct Cylinder {
     parts: HittableList
 }

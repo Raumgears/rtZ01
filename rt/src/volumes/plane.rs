@@ -10,7 +10,7 @@ pub struct Plane {
     mat: Arc<dyn Material>,
 }
 
-// Dist should be negative
+// Dist should be negative in order to be in positive coordinates
 impl Plane {
     pub fn new(norm: Vec3, dist: f64, mat: Arc<dyn Material>) -> Plane {
         let unit_norm = unit_vec(norm);

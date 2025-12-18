@@ -1,12 +1,13 @@
 use crate::basics::{Color, Ray, rand_unit_vec};
 use crate::traits::{HitRecord, Material};
 
+// Any mat with diffuse reflection
 pub struct Lambertian {
     albedo: Color,
 }
 
 impl Lambertian {
-    pub fn new(a: Color) -> Self {
+    pub fn new(a: Color) -> Lambertian {
         Lambertian { albedo: a }
     }
 }
