@@ -123,7 +123,8 @@ trait Material {
 
 ---
 
-## How to Use/Modify
+
+## How to Use/Modify
 You can freely modify the available geometric shapes, the scene, and the camera angle in main.rs.
 
 Examples should already be in place to help you.
